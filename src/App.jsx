@@ -10,7 +10,7 @@ function App() {
       <UIManager>
 
       </UIManager>
-      <div>hello world</div>
+      
     </>
   );
 }
