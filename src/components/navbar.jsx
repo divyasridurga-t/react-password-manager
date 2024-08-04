@@ -5,21 +5,14 @@ export default function Navbar(){
       <>
         <nav className="bg-purple-300 flex justify-between items-center px-44 h-[60px]">
           <div className="logo font-bold text-2xl">
-            <span className="text-green-700"> &lt;</span>
+            <span className="text-purple-700"> &lt;</span>
             Pass
-            <span className="text-green-700">OP/&gt;</span>
+            <span className="text-purple-700">OP/&gt;</span>
           </div>
-          <ul className="flex font-bold">
-            <li className="pr-4">
-              <a>Home</a>
-            </li>
-            <li className="pr-4">
-              <a>About</a>
-            </li>
-            <li className="pr-4">
-              <a>Contact</a>
-            </li>
-          </ul>
+          
+          <div>
+            <button className="flex gap-1 bg-purple-500 font-bold rounded-full p-2 shadow-lg text-white hover:bg-purple-700"><img src="/images/github.png" /><span>GitHub</span></button>
+          </div>
         </nav>
       </>
     );

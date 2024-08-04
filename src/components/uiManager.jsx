@@ -27,16 +27,19 @@ export default function UIManager() {
     console.log(passwordArray);
   };
 
+  const copyText=(text)=>{
+    navigator.clipboard.writeText(text);
+  }
+
   return (
     <>
-      <div className="absolute top-0 z-[-2] h-screen w-screen rotate-180 transform bg-white bg-[radial-gradient(60%_120%_at_50%_50%,hsla(0,0%,100%,0)_0,rgba(252,205,238,.5)_100%)]"></div>
       {/* input fields */}
-      <div className="w-3/4 h-full mx-auto">
+      <div className="w-3/4 h-full mx-auto pb-3">
         <div className="font-bold text-4xl flex justify-center pt-4">
           <div>
-            <span className="text-green-700"> &lt;</span>
+            <span className="text-purple-700"> &lt;</span>
             Pass
-            <span className="text-green-700">OP/&gt;</span>
+            <span className="text-purple-700">OP/&gt;</span>
           </div>
         </div>
         <div className="text-center text-lg">Your own password manager.</div>
@@ -103,9 +106,32 @@ export default function UIManager() {
                     return (
                       <>
                         <tr key={index} className="border border-white">
-                          <td className="p-2 text-center">{website}</td>
-                          <td className="p-2 text-center">{username}</td>
-                          <td className="p-2 text-center">{password}</td>
+                          <td className="text-center p-2">
+                            <div className="flex justify-center items-center">
+                              <a href={website} target="_blank">
+                                {website}
+                              </a>
+                              <div className="cursor-pointer">
+                                <img width={18} src="/images/copy.png" onClick={()=>{copyText(website)}} />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="text-center p-2">
+                            <div className="flex justify-center items-center">
+                              <span>{username}</span>
+                              <div className="cursor-pointer">
+                                <img width={18} src="/images/copy.png" onClick={()=>{copyText(username)}}/>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="text-center p-2">
+                            <div className="flex justify-center items-center">
+                              <span>{password}</span>
+                              <div className="cursor-pointer">
+                                <img width={18} src="/images/copy.png" onClick={()=>{copyText(password)}}/>
+                              </div>
+                            </div>
+                          </td>
                         </tr>
                       </>
                     );
@@ -114,7 +140,9 @@ export default function UIManager() {
             </tbody>
           </table>
         ) : (
-          <h2 className="font-semibold text-lg my-3">You didn't save any passwords yet</h2>
+          <h2 className="font-semibold text-lg my-3">
+            You didn't save any passwords yet
+          </h2>
         )}
       </div>
     </>
