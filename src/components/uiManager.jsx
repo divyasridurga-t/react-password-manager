@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function UIManager() {
   let [img, setImage] = useState("eyescross");
@@ -22,17 +25,72 @@ export default function UIManager() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   const savePassword = () => {
-    setPasswordArray([...passwordArray, form]);
-    localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]));
+    setPasswordArray([...passwordArray, {...form, id:uuidv4()}]);
+    localStorage.setItem("passwords", JSON.stringify([...passwordArray,{...form, id:uuidv4()}]));
     console.log(passwordArray);
+    toast("password added successfully!", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      type:"success"
+    });
   };
 
-  const copyText=(text)=>{
+  const copyText = (text) => {
+    toast("copied to clipboard!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      type:"success"
+    });
     navigator.clipboard.writeText(text);
+  };
+
+  const deletePassword=(id)=>{
+    setPasswordArray(passwordArray.filter((item)=>item.id != id));
+    localStorage.setItem("passwords", JSON.stringify(passwordArray.filter((item)=>item.id != id)));
+    toast("password deleted successfully!", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      type:"error"
+    });
+  }
+
+  const editPassword=(id)=>{
+    setForm(passwordArray.filter((item)=> item.id ===id)[0]);
+    setPasswordArray(passwordArray.filter((item)=>item.id != id));
+    toast("password edited successfully!", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      type:'success'
+    });
   }
 
   return (
     <>
+      <ToastContainer />
       {/* input fields */}
       <div className="w-3/4 h-full mx-auto pb-3">
         <div className="font-bold text-4xl flex justify-center pt-4">
@@ -97,39 +155,85 @@ export default function UIManager() {
                 <th className="p-2 text-center">Website</th>
                 <th className="p-2 text-center">Username</th>
                 <th className="p-2 text-center">Password</th>
+                <th className="p-2 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-purple-200">
               {passwordArray.length
                 ? passwordArray.map((item, index) => {
-                    let { website = "", username = "", password = "" } = item;
+                    let { website = "", username = "", password = "", id='' } = item;
                     return (
                       <>
                         <tr key={index} className="border border-white">
-                          <td className="text-center p-2">
-                            <div className="flex justify-center items-center">
-                              <a href={website} target="_blank">
-                                {website}
-                              </a>
-                              <div className="cursor-pointer">
-                                <img width={18} src="/images/copy.png" onClick={()=>{copyText(website)}} />
+                          <td className="text-center p-2 w-[30%]">
+                            <div className="flex items-center">
+                              <div className="break-words w-[90%]">
+                                <a href={website} target="_blank">
+                                  {website}
+                                </a>
+                              </div>
+                              <div className="cursor-pointer w-[10%]">
+                                <img
+                                  width={18}
+                                  src="/images/copy.png"
+                                  onClick={() => {
+                                    copyText(website);
+                                  }}
+                                />
                               </div>
                             </div>
                           </td>
-                          <td className="text-center p-2">
-                            <div className="flex justify-center items-center">
-                              <span>{username}</span>
-                              <div className="cursor-pointer">
-                                <img width={18} src="/images/copy.png" onClick={()=>{copyText(username)}}/>
+                          <td className="text-center p-2 w-[30%]">
+                            <div className="flex justify-evenly items-center">
+                              <div className="w-[90%]">
+                                <span className="">{username}</span>
+                              </div>
+                              <div className="cursor-pointer w-[10%]">
+                                <img
+                                  width={18}
+                                  src="/images/copy.png"
+                                  onClick={() => {
+                                    copyText(username);
+                                  }}
+                                />
                               </div>
                             </div>
                           </td>
-                          <td className="text-center p-2">
+                          <td className="text-center p-2 w-[30%]">
                             <div className="flex justify-center items-center">
+                              <div className="w-[90%]">
                               <span>{password}</span>
-                              <div className="cursor-pointer">
-                                <img width={18} src="/images/copy.png" onClick={()=>{copyText(password)}}/>
                               </div>
+                              
+                              <div className="cursor-pointer w-[10%]">
+                                <img
+                                  width={18}
+                                  src="/images/copy.png"
+                                  onClick={() => {
+                                    copyText(password);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="text-center p-2 w-[20%]">
+                            <div className="flex justify-evenly">
+                              <span onClick={()=>{editPassword(id)}}>
+                                <img
+                                  className="cursor-pointer"
+                                  width={15}
+                                  height={15}
+                                  src="/images/pencil.png"
+                                />
+                              </span>
+                              <span onClick={()=>{deletePassword(id)}}>
+                                <img
+                                  className="cursor-pointer"
+                                  width={15}
+                                  height={15}
+                                  src="/images/delete.png"
+                                />
+                              </span>
                             </div>
                           </td>
                         </tr>
