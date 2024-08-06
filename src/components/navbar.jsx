@@ -3,7 +3,7 @@ import React from "react";
 export default function Navbar(){
     return (
       <>
-        <nav className="bg-purple-300 flex justify-between items-center px-44 h-[60px]">
+        <nav className="bg-purple-300 flex justify-between items-center  h-[60px] sm:px-0 xl:px-44">
           <div className="logo font-bold text-2xl">
             <span className="text-purple-700"> &lt;</span>
             Pass
