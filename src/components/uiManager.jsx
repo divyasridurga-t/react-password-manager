@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export default function UIManager() {
   let [img, setImage] = useState("eyescross");
+  let [savedImage, setSavedImage] = useState("eyescross");
   let [type, setType] = useState("password");
+  let [savedType, setSavedType] = useState("password");
   let [form, setForm] = useState({ website: "", username: "", password: "" });
   let [passwordArray, setPasswordArray] = useState([]);
+  let [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     let password = localStorage.getItem("passwords");
@@ -25,8 +28,11 @@ export default function UIManager() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   const savePassword = () => {
-    setPasswordArray([...passwordArray, {...form, id:uuidv4()}]);
-    localStorage.setItem("passwords", JSON.stringify([...passwordArray,{...form, id:uuidv4()}]));
+    setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
+    localStorage.setItem(
+      "passwords",
+      JSON.stringify([...passwordArray, { ...form, id: uuidv4() }])
+    );
     console.log(passwordArray);
     toast("password added successfully!", {
       position: "top-right",
@@ -37,7 +43,7 @@ export default function UIManager() {
       draggable: true,
       progress: undefined,
       theme: "light",
-      type:"success"
+      type: "success",
     });
   };
 
@@ -51,14 +57,17 @@ export default function UIManager() {
       draggable: true,
       progress: undefined,
       theme: "light",
-      type:"success"
+      type: "success",
     });
     navigator.clipboard.writeText(text);
   };
 
-  const deletePassword=(id)=>{
-    setPasswordArray(passwordArray.filter((item)=>item.id != id));
-    localStorage.setItem("passwords", JSON.stringify(passwordArray.filter((item)=>item.id != id)));
+  const deletePassword = (id) => {
+    setPasswordArray(passwordArray.filter((item) => item.id != id));
+    localStorage.setItem(
+      "passwords",
+      JSON.stringify(passwordArray.filter((item) => item.id != id))
+    );
     toast("password deleted successfully!", {
       position: "top-right",
       autoClose: 5000,
@@ -68,13 +77,13 @@ export default function UIManager() {
       draggable: true,
       progress: undefined,
       theme: "light",
-      type:"error"
+      type: "error",
     });
-  }
+  };
 
-  const editPassword=(id)=>{
-    setForm(passwordArray.filter((item)=> item.id ===id)[0]);
-    setPasswordArray(passwordArray.filter((item)=>item.id != id));
+  const editPassword = (id) => {
+    setForm(passwordArray.filter((item) => item.id === id)[0]);
+    setPasswordArray(passwordArray.filter((item) => item.id != id));
     toast("password edited successfully!", {
       position: "top-right",
       autoClose: 5000,
@@ -84,9 +93,23 @@ export default function UIManager() {
       draggable: true,
       progress: undefined,
       theme: "light",
-      type:'success'
+      type: "success",
     });
-  }
+  };
+
+  const showSavePassword = (id) => {
+    passwordArray.filter((item) => {
+      // console.log(item.id, id);
+      if (item.id === id) {
+        setShowPassword(true);
+      }
+    });
+    setSavedImage(savedImage == "eyescross" ? "eyes" : "eyescross");
+    setSavedType(savedType == "password" ? "text" : "password");
+  };
+
+  console.log(showPassword);
+  
 
   return (
     <>
@@ -161,7 +184,12 @@ export default function UIManager() {
             <tbody className="bg-purple-200">
               {passwordArray.length
                 ? passwordArray.map((item, index) => {
-                    let { website = "", username = "", password = "", id='' } = item;
+                    let {
+                      website = "",
+                      username = "",
+                      password = "",
+                      id = "",
+                    } = item;
                     return (
                       <>
                         <tr key={index} className="border border-white">
@@ -201,10 +229,24 @@ export default function UIManager() {
                           </td>
                           <td className="text-center p-2 w-[30%]">
                             <div className="flex justify-center items-center">
-                              <div className="w-[90%]">
-                              <span>{password}</span>
+                              <div className="w-[50%]">
+                                <input
+                                  className="bg-purple-200 border-none"
+                                  type={savedType}
+                                  value={password}
+                                  readOnly
+                                />
                               </div>
-                              
+                              <div className="w-[10%]">
+                                <img
+                                  onClick={() => {
+                                    showSavePassword(id);
+                                  }}
+                                  className="cursor-pointer"
+                                  width={20}
+                                  src={`/images/${savedImage}.png`}
+                                />
+                              </div>
                               <div className="cursor-pointer w-[10%]">
                                 <img
                                   width={18}
@@ -218,7 +260,11 @@ export default function UIManager() {
                           </td>
                           <td className="text-center p-2 w-[20%]">
                             <div className="flex justify-evenly">
-                              <span onClick={()=>{editPassword(id)}}>
+                              <span
+                                onClick={() => {
+                                  editPassword(id);
+                                }}
+                              >
                                 <img
                                   className="cursor-pointer"
                                   width={15}
@@ -226,7 +272,11 @@ export default function UIManager() {
                                   src="/images/pencil.png"
                                 />
                               </span>
-                              <span onClick={()=>{deletePassword(id)}}>
+                              <span
+                                onClick={() => {
+                                  deletePassword(id);
+                                }}
+                              >
                                 <img
                                   className="cursor-pointer"
                                   width={15}
