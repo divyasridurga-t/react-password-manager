@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import CryptoJS from "crypto-js";
 import { useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,12 +14,20 @@ export default function UIManager() {
   let [passwordArray, setPasswordArray] = useState([]);
   let [showPassword, setShowPassword] = useState(false);
 
+  // encrypting
+  const secretKey = 'hsfdjkhdusyr67w574we68rznfdkjv';
+
+  
+
   useEffect(() => {
     let password = localStorage.getItem("passwords");
     if (password) {
-      setPasswordArray(JSON.parse(password));
+      let bytes= CryptoJS.AES.decrypt(password, secretKey);
+      let decryptedData=JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
+      setPasswordArray(decryptedData);
     }
   }, []);
+  
 
   function handleClick() {
     setImage(img == "eyescross" ? "eyes" : "eyescross");
@@ -29,11 +38,11 @@ export default function UIManager() {
   };
   const savePassword = () => {
     setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
+    let encryptedData= CryptoJS.AES.encrypt(JSON.stringify([...passwordArray, { ...form, id: uuidv4() }]), secretKey.toString())
     localStorage.setItem(
       "passwords",
-      JSON.stringify([...passwordArray, { ...form, id: uuidv4() }])
+      encryptedData
     );
-    console.log(passwordArray);
     toast("password added successfully!", {
       position: "top-right",
       autoClose: 5000,
@@ -64,9 +73,12 @@ export default function UIManager() {
 
   const deletePassword = (id) => {
     setPasswordArray(passwordArray.filter((item) => item.id != id));
+    // let data=passwordArray.filter((item) => item.id != id)
+    let encryptedData= CryptoJS.AES.encrypt(JSON.stringify(passwordArray.filter((item) => item.id != id)), secretKey.toString())
+    
     localStorage.setItem(
       "passwords",
-      JSON.stringify(passwordArray.filter((item) => item.id != id))
+      encryptedData
     );
     toast("password deleted successfully!", {
       position: "top-right",
@@ -99,7 +111,6 @@ export default function UIManager() {
 
   const showSavePassword = (id) => {
     passwordArray.filter((item) => {
-      // console.log(item.id, id);
       if (item.id === id) {
         setShowPassword(true);
       }
@@ -107,8 +118,6 @@ export default function UIManager() {
     setSavedImage(savedImage == "eyescross" ? "eyes" : "eyescross");
     setSavedType(savedType == "password" ? "text" : "password");
   };
-
-  console.log(showPassword);
   
 
   return (
