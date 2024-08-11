@@ -13,6 +13,7 @@ export default function UIManager() {
   let [form, setForm] = useState({ website: "", username: "", password: "" });
   let [passwordArray, setPasswordArray] = useState([]);
   let [showPassword, setShowPassword] = useState(false);
+  let [edit, setEdit] = useState({ isEdit: false, id: "" });
 
   // encrypting
   const secretKey = "hsfdjkhdusyr67w574we68rznfdkjv";
@@ -31,26 +32,55 @@ export default function UIManager() {
     setType(type == "password" ? "text" : "password");
   }
   const handleChange = (e) => {
+    console.log(e.target.value.length);
+
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   const savePassword = () => {
+    setEdit({ isEdit: false});
+    let data;
     setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
     let encryptedData = CryptoJS.AES.encrypt(
       JSON.stringify([...passwordArray, { ...form, id: uuidv4() }]),
       secretKey.toString()
     );
-    localStorage.setItem("passwords", encryptedData);
-    toast("password added successfully!", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      type: "success",
-    });
+    data = encryptedData;
+    if (edit.isEdit) {
+      let x = passwordArray.filter((key) => {
+        if (key.id == edit.id) {
+          key.website = form.website;
+          key.username = form.username;
+          key.password = form.password;
+        }
+        return key;
+      });
+      setPasswordArray(x);
+      let encryptedData_ = CryptoJS.AES.encrypt(
+        JSON.stringify(x),
+        secretKey.toString()
+      );
+      data = encryptedData_;
+    }
+
+    localStorage.setItem("passwords", data);
+    toast(
+      edit.isEdit
+        ? "password edited successfully!"
+        : "password added successfully!",
+      {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        type: "success",
+      }
+    );
+
+    setForm({ website: "", username: "", password: "" });
   };
 
   const copyText = (text) => {
@@ -91,19 +121,9 @@ export default function UIManager() {
   };
 
   const editPassword = (id) => {
+    setEdit({ isEdit: true, id: id });
     setForm(passwordArray.filter((item) => item.id === id)[0]);
-    setPasswordArray(passwordArray.filter((item) => item.id != id));
-    toast("password edited successfully!", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      type: "success",
-    });
+    // setPasswordArray(passwordArray.filter((item) => item.id != id));
   };
 
   const showSavePassword = (id) => {
@@ -137,7 +157,9 @@ export default function UIManager() {
             name="website"
             className="w-full rounded-full border border-purple-700 h-10 px-3 mb-2"
             type="text"
+            required
           />
+          {/* <div>Your password must contain minimum 8 characters</div> */}
           <div className="mt-2 flex flex-col sm:flex-row gap-4">
             <input
               value={form.username}
@@ -146,6 +168,7 @@ export default function UIManager() {
               name="username"
               type="text"
               className="w-full sm:w-1/2 rounded-full border border-purple-700 h-10 px-3"
+              required
             />
             <div className="relative w-full sm:w-1/2">
               <input
@@ -155,6 +178,7 @@ export default function UIManager() {
                 name="password"
                 type={type}
                 className="w-full rounded-full border border-purple-700 h-10 px-3"
+                required
               />
               <span className="absolute right-3 top-2 cursor-pointer">
                 <img
@@ -172,8 +196,14 @@ export default function UIManager() {
             onClick={savePassword}
             className="flex gap-1 items-center p-2 bg-purple-500 rounded-full text-white font-semibold hover:bg-purple-700 shadow-lg shadow-purple-500/50"
           >
-            <span className="text-2xl">+ </span>
-            <span>Add Password</span>
+            {edit.isEdit ? (
+              <><span>Save Password</span></>
+            ) : (
+              <>
+                <span className="text-2xl">+ </span>
+                <span>Add Password</span>
+              </>
+            )}
           </button>
         </div>
         {/* Display fields */}
