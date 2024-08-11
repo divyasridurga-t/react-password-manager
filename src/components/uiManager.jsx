@@ -4,6 +4,13 @@ import { useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
+let websiteUrlPattern = new RegExp(
+  /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+)\.([a-zA-Z]{2,})([\/a-zA-Z0-9#]+\/?)*$/
+);
+let usernameRegularPattern = new RegExp(/^.{3,20}$/);
+let passwordPattern = new RegExp(
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+);
 
 export default function UIManager() {
   let [img, setImage] = useState("eyescross");
@@ -14,6 +21,11 @@ export default function UIManager() {
   let [passwordArray, setPasswordArray] = useState([]);
   let [showPassword, setShowPassword] = useState(false);
   let [edit, setEdit] = useState({ isEdit: false, id: "" });
+  let [isValid, setIsValid] = useState({
+    website: true,
+    username: true,
+    password: true,
+  });
 
   // encrypting
   const secretKey = "hsfdjkhdusyr67w574we68rznfdkjv";
@@ -27,17 +39,22 @@ export default function UIManager() {
     }
   }, []);
 
+  console.log(isValid);
+
   function handleClick() {
     setImage(img == "eyescross" ? "eyes" : "eyescross");
     setType(type == "password" ? "text" : "password");
   }
   const handleChange = (e) => {
-    console.log(e.target.value.length);
-
     setForm({ ...form, [e.target.name]: e.target.value });
+    setIsValid({
+      website: websiteUrlPattern.test(form.website),
+      username: usernameRegularPattern.test(form.username),
+      password: passwordPattern.test(form.password),
+    });
   };
   const savePassword = () => {
-    setEdit({ isEdit: false});
+    setEdit({ isEdit: false });
     let data;
     setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
     let encryptedData = CryptoJS.AES.encrypt(
@@ -159,7 +176,6 @@ export default function UIManager() {
             type="text"
             required
           />
-          {/* <div>Your password must contain minimum 8 characters</div> */}
           <div className="mt-2 flex flex-col sm:flex-row gap-4">
             <input
               value={form.username}
@@ -191,13 +207,24 @@ export default function UIManager() {
             </div>
           </div>
         </div>
+        <div className="flex justify-center mt-2 text-red-600 font-bold capitalize">
+          {!isValid.website
+            ? "please enter a valid website url"
+            : !isValid.username
+            ? "please enter a valid username"
+            : !isValid.password
+            ? "please enter a valid password"
+            : ""}
+        </div>
         <div className="flex justify-center mt-4">
           <button
             onClick={savePassword}
             className="flex gap-1 items-center p-2 bg-purple-500 rounded-full text-white font-semibold hover:bg-purple-700 shadow-lg shadow-purple-500/50"
           >
             {edit.isEdit ? (
-              <><span>Save Password</span></>
+              <>
+                <span>Save Password</span>
+              </>
             ) : (
               <>
                 <span className="text-2xl">+ </span>
