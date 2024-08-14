@@ -19,7 +19,7 @@ export default function Navbar() {
             onClick={handleClick}
             className="flex gap-1 bg-purple-500 font-bold rounded-full p-2 shadow-lg text-white hover:bg-purple-700"
           >
-            <img src="/images/github.png" />
+            <img src="https://i.ibb.co/Lg3jGqb/github.png" />
             <span>GitHub</span>
           </button>
         </div>

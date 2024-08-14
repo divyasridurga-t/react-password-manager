@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
 let websiteUrlPattern = new RegExp(
-  /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+)\.([a-zA-Z]{2,})([\/a-zA-Z0-9#]+\/?)*$/
+  /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}([\/a-zA-Z0-9#]+\/?)?$|^([a-zA-Z0-9._%+-]+@(outlook\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/
 );
 let usernameRegularPattern = new RegExp(/^.{3,20}$/);
 let passwordPattern = new RegExp(
@@ -26,6 +26,7 @@ export default function UIManager() {
     username: true,
     password: true,
   });
+  let [isDisabled, setIsDisabled] = useState(true);
 
   // encrypting
   const secretKey = "hsfdjkhdusyr67w574we68rznfdkjv";
@@ -39,8 +40,6 @@ export default function UIManager() {
     }
   }, []);
 
-  console.log(isValid);
-
   function handleClick() {
     setImage(img == "eyescross" ? "eyes" : "eyescross");
     setType(type == "password" ? "text" : "password");
@@ -52,6 +51,9 @@ export default function UIManager() {
       username: usernameRegularPattern.test(form.username),
       password: passwordPattern.test(form.password),
     });
+    setIsDisabled(
+      isValid.password && isValid.username && isValid.website ? false : true
+    );
   };
   const savePassword = () => {
     setEdit({ isEdit: false });
@@ -115,6 +117,12 @@ export default function UIManager() {
     navigator.clipboard.writeText(text);
   };
 
+  console.log(
+    isValid,
+    isValid.password && isValid.username && isValid.website,
+    "????????????????????????????"
+  );
+
   const deletePassword = (id) => {
     setPasswordArray(passwordArray.filter((item) => item.id != id));
     // let data=passwordArray.filter((item) => item.id != id)
@@ -152,6 +160,9 @@ export default function UIManager() {
     setSavedImage(savedImage == "eyescross" ? "eyes" : "eyescross");
     setSavedType(savedType == "password" ? "text" : "password");
   };
+
+  let style = isDisabled ? "bg-slate-500" : "bg-purple-500";
+  let box_shadow = isDisabled ? "shadow-slate-500/50" : "shadow-purple-500/50";
 
   return (
     <>
@@ -201,7 +212,7 @@ export default function UIManager() {
                   onClick={handleClick}
                   width={20}
                   height={25}
-                  src={`images/${img}.png`}
+                  src={`https://i.ibb.co/RTV015Y/${img}.png`}
                 />
               </span>
             </div>
@@ -219,7 +230,8 @@ export default function UIManager() {
         <div className="flex justify-center mt-4">
           <button
             onClick={savePassword}
-            className="flex gap-1 items-center p-2 bg-purple-500 rounded-full text-white font-semibold hover:bg-purple-700 shadow-lg shadow-purple-500/50"
+            disabled={isDisabled}
+            className={`flex gap-1 items-center p-2 ${style} rounded-full text-white font-semibold hover:${style} shadow-lg ${box_shadow}`}
           >
             {edit.isEdit ? (
               <>
@@ -271,7 +283,7 @@ export default function UIManager() {
                               <div className="cursor-pointer w-[10%] ml-2">
                                 <img
                                   width={18}
-                                  src="/images/copy.png"
+                                  src="https://i.ibb.co/7kp46Rf/copy.png"
                                   onClick={() => {
                                     copyText(website);
                                   }}
@@ -287,7 +299,7 @@ export default function UIManager() {
                               <div className="cursor-pointer w-[10%] ml-2">
                                 <img
                                   width={18}
-                                  src="/images/copy.png"
+                                  src="https://i.ibb.co/7kp46Rf/copy.png"
                                   onClick={() => {
                                     copyText(username);
                                   }}
@@ -312,13 +324,13 @@ export default function UIManager() {
                                   }}
                                   className="cursor-pointer"
                                   width={20}
-                                  src={`/images/${savedImage}.png`}
+                                  src={`https://i.ibb.co/RTV015Y/${savedImage}.png`}
                                 />
                               </div>
                               <div className="cursor-pointer w-[10%] ml-2">
                                 <img
                                   width={18}
-                                  src="/images/copy.png"
+                                  src="https://i.ibb.co/7kp46Rf/copy.png"
                                   onClick={() => {
                                     copyText(password);
                                   }}
@@ -337,7 +349,7 @@ export default function UIManager() {
                                   className="cursor-pointer"
                                   width={15}
                                   height={15}
-                                  src="/images/pencil.png"
+                                  src="https://i.ibb.co/5R4cMfN/pencil.png"
                                 />
                               </span>
                               <span
@@ -349,7 +361,7 @@ export default function UIManager() {
                                   className="cursor-pointer"
                                   width={15}
                                   height={15}
-                                  src="/images/delete.png"
+                                  src="https://i.ibb.co/nmK7MnM/delete.png"
                                 />
                               </span>
                             </div>
