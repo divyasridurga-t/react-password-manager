@@ -13,8 +13,10 @@ let passwordPattern = new RegExp(
 );
 
 export default function UIManager() {
-  let [img, setImage] = useState("eyescross");
-  let [savedImage, setSavedImage] = useState("eyescross");
+  let [img, setImage] = useState("https://i.ibb.co/RTV015Y/eyescross.png");
+  let [savedImage, setSavedImage] = useState(
+    "https://i.ibb.co/RTV015Y/eyescross.png"
+  );
   let [type, setType] = useState("password");
   let [savedType, setSavedType] = useState("password");
   let [form, setForm] = useState({ website: "", username: "", password: "" });
@@ -41,7 +43,11 @@ export default function UIManager() {
   }, []);
 
   function handleClick() {
-    setImage(img == "eyescross" ? "eyes" : "eyescross");
+    setImage(
+      img == "https://i.ibb.co/RTV015Y/eyescross.png"
+        ? "https://i.ibb.co/MG9V6pd/eyes.png"
+        : "https://i.ibb.co/RTV015Y/eyescross.png"
+    );
     setType(type == "password" ? "text" : "password");
   }
   const handleChange = (e) => {
@@ -157,7 +163,7 @@ export default function UIManager() {
         setShowPassword(true);
       }
     });
-    setSavedImage(savedImage == "eyescross" ? "eyes" : "eyescross");
+    setSavedImage(savedImage == "https://i.ibb.co/RTV015Y/eyescross.png" ? "https://i.ibb.co/MG9V6pd/eyes.png" : "https://i.ibb.co/RTV015Y/eyescross.png");
     setSavedType(savedType == "password" ? "text" : "password");
   };
 
@@ -212,7 +218,7 @@ export default function UIManager() {
                   onClick={handleClick}
                   width={20}
                   height={25}
-                  src={`https://i.ibb.co/RTV015Y/${img}.png`}
+                  src={img}
                 />
               </span>
             </div>
@@ -324,7 +330,7 @@ export default function UIManager() {
                                   }}
                                   className="cursor-pointer"
                                   width={20}
-                                  src={`https://i.ibb.co/RTV015Y/${savedImage}.png`}
+                                  src={savedImage}
                                 />
                               </div>
                               <div className="cursor-pointer w-[10%] ml-2">
