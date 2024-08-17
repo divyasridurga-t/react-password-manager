@@ -7,9 +7,9 @@ import { v4 as uuidv4 } from "uuid";
 let websiteUrlPattern = new RegExp(
   /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}([\/a-zA-Z0-9#]+\/?)?$|^([a-zA-Z0-9._%+-]+@(outlook\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/
 );
-let usernameRegularPattern = new RegExp(/^.{3,20}$/);
+let usernameRegularPattern = new RegExp(/^\S{3,20}$/);
 let passwordPattern = new RegExp(
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{7,}$/
 );
 
 export default function UIManager() {
@@ -24,9 +24,9 @@ export default function UIManager() {
   let [showPassword, setShowPassword] = useState(false);
   let [edit, setEdit] = useState({ isEdit: false, id: "" });
   let [isValid, setIsValid] = useState({
-    website: true,
-    username: true,
-    password: true,
+    website: false,
+    username: false,
+    password: false,
   });
   let [isDisabled, setIsDisabled] = useState(true);
 
@@ -41,6 +41,11 @@ export default function UIManager() {
       setPasswordArray(decryptedData);
     }
   }, []);
+  useEffect(()=>{
+    setIsDisabled(
+      (isValid.password && isValid.username && isValid.website) ? false : true
+    );
+  },[isValid])
 
   function handleClick() {
     setImage(
@@ -57,9 +62,7 @@ export default function UIManager() {
       username: usernameRegularPattern.test(form.username),
       password: passwordPattern.test(form.password),
     });
-    setIsDisabled(
-      isValid.password && isValid.username && isValid.website ? false : true
-    );
+    
   };
   const savePassword = () => {
     setEdit({ isEdit: false });
@@ -123,11 +126,6 @@ export default function UIManager() {
     navigator.clipboard.writeText(text);
   };
 
-  console.log(
-    isValid,
-    isValid.password && isValid.username && isValid.website,
-    "????????????????????????????"
-  );
 
   const deletePassword = (id) => {
     setPasswordArray(passwordArray.filter((item) => item.id != id));
