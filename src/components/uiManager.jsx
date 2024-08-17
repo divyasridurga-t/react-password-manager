@@ -9,19 +9,18 @@ let websiteUrlPattern = new RegExp(
 );
 let usernameRegularPattern = new RegExp(/^\S{3,20}$/);
 let passwordPattern = new RegExp(
-   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{7,}$/
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{7,}$/
 );
 
 export default function UIManager() {
   let [img, setImage] = useState("https://i.ibb.co/RTV015Y/eyescross.png");
-  let [savedImage, setSavedImage] = useState(
-    "https://i.ibb.co/RTV015Y/eyescross.png"
-  );
   let [type, setType] = useState("password");
-  let [savedType, setSavedType] = useState("password");
-  let [form, setForm] = useState({ website: "", username: "", password: "" });
+  let [form, setForm] = useState({
+    website: "",
+    username: "",
+    password: "",
+  });
   let [passwordArray, setPasswordArray] = useState([]);
-  let [showPassword, setShowPassword] = useState(false);
   let [edit, setEdit] = useState({ isEdit: false, id: "" });
   let [isValid, setIsValid] = useState({
     website: false,
@@ -41,11 +40,11 @@ export default function UIManager() {
       setPasswordArray(decryptedData);
     }
   }, []);
-  useEffect(()=>{
+  useEffect(() => {
     setIsDisabled(
-      (isValid.password && isValid.username && isValid.website) ? false : true
+      isValid.password && isValid.username && isValid.website ? false : true
     );
-  },[isValid])
+  }, [isValid]);
 
   function handleClick() {
     setImage(
@@ -62,14 +61,29 @@ export default function UIManager() {
       username: usernameRegularPattern.test(form.username),
       password: passwordPattern.test(form.password),
     });
-    
   };
   const savePassword = () => {
     setEdit({ isEdit: false });
     let data;
-    setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
+    setPasswordArray([
+      ...passwordArray,
+      {
+        ...form,
+        id: uuidv4(),
+        img: "https://i.ibb.co/RTV015Y/eyescross.png",
+        type: "password",
+      },
+    ]);
     let encryptedData = CryptoJS.AES.encrypt(
-      JSON.stringify([...passwordArray, { ...form, id: uuidv4() }]),
+      JSON.stringify([
+        ...passwordArray,
+        {
+          ...form,
+          id: uuidv4(),
+          img: "https://i.ibb.co/RTV015Y/eyescross.png",
+          type: "password",
+        },
+      ]),
       secretKey.toString()
     );
     data = encryptedData;
@@ -126,7 +140,6 @@ export default function UIManager() {
     navigator.clipboard.writeText(text);
   };
 
-
   const deletePassword = (id) => {
     setPasswordArray(passwordArray.filter((item) => item.id != id));
     // let data=passwordArray.filter((item) => item.id != id)
@@ -152,19 +165,19 @@ export default function UIManager() {
   const editPassword = (id) => {
     setEdit({ isEdit: true, id: id });
     setForm(passwordArray.filter((item) => item.id === id)[0]);
-    // setPasswordArray(passwordArray.filter((item) => item.id != id));
   };
 
   const showSavePassword = (id) => {
     passwordArray.filter((item) => {
       if (item.id === id) {
-        setShowPassword(true);
+        item.img =
+          item.img == "https://i.ibb.co/RTV015Y/eyescross.png"
+            ? "https://i.ibb.co/MG9V6pd/eyes.png"
+            : "https://i.ibb.co/RTV015Y/eyescross.png";
+        item.type = item.type == "password" ? "text" : "password";
       }
     });
-    setSavedImage(savedImage == "https://i.ibb.co/RTV015Y/eyescross.png" ? "https://i.ibb.co/MG9V6pd/eyes.png" : "https://i.ibb.co/RTV015Y/eyescross.png");
-    setSavedType(savedType == "password" ? "text" : "password");
   };
-
   let style = isDisabled ? "bg-slate-500" : "bg-purple-500";
   let box_shadow = isDisabled ? "shadow-slate-500/50" : "shadow-purple-500/50";
 
@@ -212,12 +225,7 @@ export default function UIManager() {
                 required
               />
               <span className="absolute right-3 top-2 cursor-pointer">
-                <img
-                  onClick={handleClick}
-                  width={20}
-                  height={25}
-                  src={img}
-                />
+                <img onClick={handleClick} width={20} height={25} src={img} />
               </span>
             </div>
           </div>
@@ -270,6 +278,8 @@ export default function UIManager() {
                         username = "",
                         password = "",
                         id = "",
+                        img = "",
+                        type = "",
                       } = item;
                       return (
                         <tr key={index} className="border border-white">
@@ -316,7 +326,7 @@ export default function UIManager() {
                               <div className="w-[50%]">
                                 <input
                                   className="bg-purple-200 border-none w-full text-center"
-                                  type={savedType}
+                                  type={type}
                                   value={password}
                                   readOnly
                                 />
@@ -328,7 +338,7 @@ export default function UIManager() {
                                   }}
                                   className="cursor-pointer"
                                   width={20}
-                                  src={savedImage}
+                                  src={img}
                                 />
                               </div>
                               <div className="cursor-pointer w-[10%] ml-2">
