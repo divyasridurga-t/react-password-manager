@@ -168,7 +168,7 @@ export default function UIManager() {
   };
 
   const showSavePassword = (id) => {
-    passwordArray.filter((item) => {
+   let y= passwordArray.filter((item) => {
       if (item.id === id) {
         item.img =
           item.img == "https://i.ibb.co/RTV015Y/eyescross.png"
@@ -176,7 +176,14 @@ export default function UIManager() {
             : "https://i.ibb.co/RTV015Y/eyescross.png";
         item.type = item.type == "password" ? "text" : "password";
       }
+      return item
     });
+    setPasswordArray(y);
+    let encryptedData = CryptoJS.AES.encrypt(
+      JSON.stringify(y),
+      secretKey.toString()
+    );
+    localStorage.setItem("passwords", encryptedData);
   };
   let style = isDisabled ? "bg-slate-500" : "bg-purple-500";
   let box_shadow = isDisabled ? "shadow-slate-500/50" : "shadow-purple-500/50";
@@ -279,7 +286,7 @@ export default function UIManager() {
                         password = "",
                         id = "",
                         img = "",
-                        type = "",
+                        type=''
                       } = item;
                       return (
                         <tr key={index} className="border border-white">
